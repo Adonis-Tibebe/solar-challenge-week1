@@ -3,27 +3,21 @@ name: Python CI
 on: [push]
 
 jobs:
-           python-version: 3.11  # Use a stable Python version
-          
-      - name: Install dependencies
- build:
-    runs-on: ubuntu-latest  # Change to 'windows        run: |
-          python -m pip install --upgrade-latest' if pywin32 is mandatory
+  build:
+    runs-on: ubuntu-latest
 
     steps:
- pip
-          # Exclude pywin32 for non-Windows systems      - uses: actions/checkout@v2
-      - name: Set up
-          if [ "$(uname)" != "Windows_NT" ]; then
-            sed -i Python
-        uses: actions/setup-python@v2
-        with '/pywin32/d' requirements.txt:
-          python-version: 3.10  # Use a valid Python version
-      - name
-          fi
-          pip install -r requirements.txt: Install dependencies
+      - uses: actions/checkout@v2
 
-          
-      - name: Check Python version
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'  # Use a valid, stable Python version
+
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade        run: python --version
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check Python version
+        run: python --version
