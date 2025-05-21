@@ -22,9 +22,9 @@ from utils import (
                    )
 
 country_file_map = {
-    "Togo": "../data_for_deployment/togo-dapaong_qc_cleaned.csv",
-    "Benin": "../data_for_deployment/benin_malanville_cleaned.csv",
-    "Sierra Leone": "../data_for_deployment/sierraleone-bumbuna_cleaned.csv"
+    "Togo": "data_for_deployment/togo-dapaong_qc_cleaned.csv",
+    "Benin": "data_for_deployment/benin_malanville_cleaned.csv",
+    "Sierra Leone": "data_for_deployment/sierraleone-bumbuna_cleaned.csv"
 }
 country = st.sidebar.selectbox(
     "Select Analysis Section",
@@ -268,9 +268,9 @@ else:
     """)
 
     # Load data
-    benin_df = pd.read_csv("../data_for_deployment/benin_malanville_cleaned.csv")
-    togo_df = pd.read_csv("../data_for_deployment/togo-dapaong_qc_cleaned.csv")
-    sierraleone_df = pd.read_csv("../data_for_deployment/sierraleone-bumbuna_cleaned.csv")
+    benin_df = pd.read_csv("data_for_deployment/benin_malanville_cleaned.csv")
+    togo_df = pd.read_csv("data_for_deployment/togo-dapaong_qc_cleaned.csv")
+    sierraleone_df = pd.read_csv("data_for_deployment/sierraleone-bumbuna_cleaned.csv")
     benin_df['Country'] = 'Benin'
     togo_df['Country'] = 'Togo'
     sierraleone_df['Country'] = 'Sierra Leone'
