@@ -1,4 +1,4 @@
-# Solar Challenge Week 1
+# Solar Challenge Week 0
 
 This repository contains a robust, reproducible workflow for solar data analysis across Benin, Togo, and Sierra Leone. The project covers data profiling, cleaning, exploratory data analysis (EDA), cross-country comparison, and an interactive dashboard for visualization and insight generation.
 
