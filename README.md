@@ -1,5 +1,7 @@
 > **Note:**  
 > For optimal performance and to prevent timeouts on Streamlit Community Cloud, all visualizations in the dashboard use downsampled data. Large datasets are automatically sampled before plotting to ensure smooth and responsive user experience.(extended delays were experienced otherwise)
+> here is the link below:
+https://solar-challenge-week1-2w82gxwrdkdqmumt8ba2vq.streamlit.app/
 
 # Solar Challenge Week 0
 
