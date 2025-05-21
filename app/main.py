@@ -38,7 +38,13 @@ if country != "Cross-country Comparison":
     # Map True/False to "Outlier"/"Normal" for each of these columns
     for col in outlier_flag_cols:
         df_data[col] = df_data[col].map({True: "Outlier", False: "Normal"})
-
+    st.title(f"{country} Solar Resource Analysis")
+    st.markdown(f"""
+        This section provides an in-depth analysis of solar and meteorological data for **{country}**.
+        You can explore data quality, outlier detection, time series trends, anomaly detection, cleaning impact, correlations, wind patterns, and more.
+        Use the interactive controls to visualize and interpret key metrics, supporting data-driven decisions for solar energy planning and research in {country}.
+        ---
+        """)    
     st.header("Data Overview & Summary")
     st.markdown("""
     - **Summary statistics** for key columns are shown below.
