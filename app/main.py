@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
-sys.path.insert(0, str(Path().resolve().parent / 'src'))
 from country_comparision import (
         run_anova, run_kruskal,print_country_metric_extremes
     )
