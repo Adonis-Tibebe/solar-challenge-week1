@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Helper: Downsample DataFrame for plotting if too large
-def _downsample_df(df, max_rows=5000):
+def _downsample_df(df, max_rows=10000):
     """Downsample DataFrame for plotting if too large."""
     if len(df) > max_rows:
         return df.sample(max_rows, random_state=42)
