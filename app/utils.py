@@ -4,19 +4,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
 import numpy as np
-
-#for streamlit_country_comparison.py
 import matplotlib.pyplot as plt
+
+# Helper: Downsample DataFrame for plotting if too large
+def _downsample_df(df, max_rows=5000):
+    """Downsample DataFrame for plotting if too large."""
+    if len(df) > max_rows:
+        return df.sample(max_rows, random_state=42)
+    return df
 
 def country_metric_extremes_str(summary, metrics=['GHI', 'DNI', 'DHI'], stats=['mean', 'median', 'std']):
     """
     Returns a Markdown-formatted string summarizing the country with the highest and lowest value
     for each metric and statistic, suitable for display in Streamlit.
-
-    Parameters:
-        summary (pd.DataFrame): MultiIndex DataFrame with metrics and stats (as from groupby().agg()).
-        metrics (list): List of metric names (columns).
-        stats (list): List of statistics to check (e.g., mean, median, std).
     """
     output = []
     for metric in metrics:
@@ -33,11 +33,11 @@ def country_metric_extremes_str(summary, metrics=['GHI', 'DNI', 'DHI'], stats=['
         output.append("")  # Blank line for spacing
     return "\n".join(output)
 
-
 def streamlit_country_boxplots(df, metrics, country_col='Country', palette=None, figsize=(10, 5)):
     """
     Streamlit + Plotly version: Interactive boxplots for specified metrics grouped by country.
     """
+    df = _downsample_df(df)
     if palette is None:
         unique_countries = df[country_col].unique()
         palette = dict(zip(unique_countries, sns.color_palette("tab10", len(unique_countries)).as_hex()))
@@ -65,6 +65,7 @@ def streamlit_avg_ghi_bar(df, country_col='Country', ghi_col='GHI'):
     """
     Plots a bar chart ranking countries by average GHI using Streamlit (interactive version).
     """
+    df = _downsample_df(df)
     avg_ghi = df.groupby(country_col)[ghi_col].mean().sort_values(ascending=False).reset_index()
 
     fig = px.bar(
@@ -84,17 +85,12 @@ def streamlit_avg_ghi_bar(df, country_col='Country', ghi_col='GHI'):
         showlegend=False
     )
     st.plotly_chart(fig, use_container_width=True)
+
 def plot_histograms_streamlit(df, cols, bins=30, kde=True, colors=None):
     """
     Interactive histograms.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame with data.
-        cols (list): List of column names to plot.
-        bins (int): Number of bins for the histogram.
-        kde (bool): Whether to plot kernel density estimate.
-        colors (list): List of colors for each histogram.
     """
+    df = _downsample_df(df)
     n = len(cols)
     if colors is None:
         colors = sns.color_palette("husl", n).as_hex()
@@ -137,17 +133,11 @@ def plot_histograms_streamlit(df, cols, bins=30, kde=True, colors=None):
         st.subheader(f'Histogram of {col}')
         st.plotly_chart(fig, use_container_width=True)
 
-
 def plot_wind_rose_streamlit(df, ws_col='WS', wd_col='WD', bins=8):
     """
     Interactive Wind Rose plot.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame with wind speed and direction.
-        ws_col (str): Name of wind speed column.
-        wd_col (str): Name of wind direction column (degrees).
-        bins (int): Number of direction bins (e.g., 8 for N, NE, E, ...).
     """
+    df = _downsample_df(df)
     wd = df[wd_col] % 360
     ws = df[ws_col]
     wd_bins = np.linspace(0, 360, bins + 1)
@@ -190,18 +180,13 @@ def plot_wind_rose_streamlit(df, ws_col='WS', wd_col='WD', bins=8):
     )
 
     st.subheader("Wind Rose (WS/WD)")
-    st.plotly_chart(fig, use_container_width_=True)
-
+    st.plotly_chart(fig, use_container_width=True)
 
 def corr_heatmap_streamlit(df, cols, title="Correlation Heatmap"):
     """
     Streamlit + Plotly version: Interactive correlation heatmap.
-
-    Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        cols (list): List of column names to include in the correlation.
-        title (str): Title for the plot.
     """
+    df = _downsample_df(df)
     # Compute correlation matrix
     corr_matrix = df[cols].corr().round(2)
 
@@ -250,17 +235,11 @@ def corr_heatmap_streamlit(df, cols, title="Correlation Heatmap"):
     st.subheader(title)
     st.plotly_chart(fig, use_container_width=True)
 
-
 def scatter_plot_streamlit(df, cols, base_col, alpha=0.5):
     """
     Scatter plots of each col in cols vs. base_col.
-
-    Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        cols (list): List of columns to plot on the y-axis.
-        base_col (str): The column to plot on the x-axis.
-        alpha (float): Transparency for scatter points.
     """
+    df = _downsample_df(df)
     for col in cols:
         trace = go.Scatter(
             x=df[base_col],
@@ -283,16 +262,11 @@ def scatter_plot_streamlit(df, cols, base_col, alpha=0.5):
         st.subheader(f'{col} vs. {base_col}')
         st.plotly_chart(fig, use_container_width=True)
 
-
 def streamlit_mod_cleaning_plot(df, cleaning_col='Cleaning'):
     """
     Interactive bar chart of average ModA & ModB for pre/post-clean.
-    
-    Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        cleaning_col (str): The column name indicating cleaning status (0=pre, 1=post).
     """
-
+    df = _downsample_df(df)
     # Group by cleaning status and calculate mean ModA & ModB
     mod_means = df.groupby(cleaning_col)[['ModA', 'ModB']].mean().reset_index()
     mod_means['Status'] = mod_means[cleaning_col].map({0: 'Pre-clean', 1: 'Post-clean'})
@@ -322,19 +296,11 @@ def streamlit_mod_cleaning_plot(df, cleaning_col='Cleaning'):
     # Show interactive plot
     st.plotly_chart(fig, use_container_width=True)
 
-
 def streamlit_anomalies_plot(df, value_col, outlier_col, title=None, ylabel=None, color='blue'):
     """
     Interactive time series with anomaly markers.
-
-    Parameters:
-        df (pd.DataFrame): Input DataFrame containing the data.
-        value_col (str): Name of the column to plot as the main time series.
-        outlier_col (str): Name of the Boolean column indicating anomalies.
-        title (str, optional): Custom title for the plot. Defaults to None.
-        ylabel (str, optional): Y-axis label. Defaults to None, which uses the value_col name.
-        color (str, optional): Line color for the main time series. Defaults to 'blue'.
     """
+    df = _downsample_df(df)
     # Create base line trace
     trace_main = go.Scatter(
         x=df['Timestamp'],
@@ -371,19 +337,11 @@ def streamlit_anomalies_plot(df, value_col, outlier_col, title=None, ylabel=None
     # Show interactive plot
     st.plotly_chart(fig, use_container_width=True)
 
-
-
 def streamlit_hourly_trend(df, value_cols, xlabel='Hour of Day', ylabel='Mean Value'):
     """
     Creates an interactive bar chart showing the hourly mean trend for specified columns using Plotly in Streamlit.
-
-    Parameters:
-        df (pd.DataFrame): DataFrame containing an 'hour' column and value columns.
-        value_cols (list): List of column names to plot.
-        xlabel (str): X-axis label.
-        ylabel (str): Y-axis label.
     """
-    # Add a subheader for the title
+    df = _downsample_df(df)
     st.subheader("Hourly Trend of Selected Metrics")
 
     # Check if 'hour' column exists
@@ -427,18 +385,11 @@ def streamlit_hourly_trend(df, value_cols, xlabel='Hour of Day', ylabel='Mean Va
     # Display the chart in Streamlit
     st.plotly_chart(fig)
 
-
 def streamlit_rolling_average(df, column_name, title=None, ylabel=None, color='orange'):
     """
     Creates an interactive 7-day rolling average line chart for a specific column using Plotly in Streamlit.
-
-    Parameters:
-        df (DataFrame): The weekly-averaged DataFrame (e.g., df_weekly).
-        column_name (str): Column to be plotted (must exist in df).
-        title (str): Plot title (optional).
-        ylabel (str): Y-axis label (optional).
-        color (str): Line color (optional).
     """
+    df = _downsample_df(df)
     st.subheader("Interactive Rolling Average Line Chart")
 
     # Check if the selected column exists in the DataFrame
@@ -477,11 +428,8 @@ def streamlit_rolling_average(df, column_name, title=None, ylabel=None, color='o
 def streamlit_boxplots(df, cols):
     """
     Creates interactive boxplots for the specified columns using Plotly in Streamlit.
-
-    Parameters:
-        df (pd.DataFrame): The input DataFrame.
-        cols (list): List of column names to plot.
     """
+    df = _downsample_df(df)
     st.subheader("Interactive Boxplots for Outlier Detection")
 
     # Sidebar for column selection

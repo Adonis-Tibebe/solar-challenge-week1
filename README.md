@@ -1,3 +1,6 @@
+> **Note:**  
+> For optimal performance and to prevent timeouts on Streamlit Community Cloud, all visualizations in the dashboard use downsampled data. Large datasets are automatically sampled before plotting to ensure smooth and responsive user experience.(extended delays were experienced otherwise)
+
 # Solar Challenge Week 0
 
 This repository contains a robust, reproducible workflow for solar data analysis across Benin, Togo, and Sierra Leone. The project covers data profiling, cleaning, exploratory data analysis (EDA), cross-country comparison, and an interactive dashboard for visualization and insight generation.
