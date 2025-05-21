@@ -23,9 +23,9 @@ from utils import (
                    )
 
 country_file_map = {
-    "Togo": "../data/togo-dapaong_qc_cleaned.csv",
-    "Benin": "../data/benin_malanville_cleaned.csv",
-    "Sierra Leone": "../data/sierraleone-bumbuna_cleaned.csv"
+    "Togo": "../data_for_deployment/togo-dapaong_qc_cleaned.csv",
+    "Benin": "../data_for_deployment/benin_malanville_cleaned.csv",
+    "Sierra Leone": "../data_for_deployment/sierraleone-bumbuna_cleaned.csv"
 }
 country = st.sidebar.selectbox(
     "Select Analysis Section",
@@ -269,9 +269,9 @@ else:
     """)
 
     # Load data
-    benin_df = pd.read_csv("../data/benin_malanville_cleaned.csv")
-    togo_df = pd.read_csv("../data/togo-dapaong_qc_cleaned.csv")
-    sierraleone_df = pd.read_csv("../data/sierraleone-bumbuna_cleaned.csv")
+    benin_df = pd.read_csv("../data_for_deployment/benin_malanville_cleaned.csv")
+    togo_df = pd.read_csv("../data_for_deployment/togo-dapaong_qc_cleaned.csv")
+    sierraleone_df = pd.read_csv("../data_for_deployment/sierraleone-bumbuna_cleaned.csv")
     benin_df['Country'] = 'Benin'
     togo_df['Country'] = 'Togo'
     sierraleone_df['Country'] = 'Sierra Leone'
@@ -284,6 +284,7 @@ else:
     Boxplots below visualize the distribution and variability of **GHI**, **DNI**, and **DHI** for each country.
     """)
     metric = st.selectbox("Select metric for boxplot", ["GHI", "DNI", "DHI"])
+    #Function for plotting boxplots to highlight distribution and variability of GHI, DNI, and DHI
     streamlit_country_boxplots(combined_df, [metric])
 
     # --- Detailed Markdown for Each Metric ---
@@ -321,6 +322,7 @@ else:
     st.markdown("""
     The following highlights which country has the highest and lowest values for each metric/statistic:
     """)
+    #function for printing country metric extremes
     st.markdown(country_metric_extremes_str(summary))
 
 
@@ -371,4 +373,18 @@ else:
     st.markdown("""
     The bar chart below ranks countries by average GHI.
     """)
+    #Function for plotting bar charts to highlight average GHI
     streamlit_avg_ghi_bar(combined_df)
+
+    st.markdown("""---
+
+### Cross-country Analysis Summary & Insights
+
+- **Benin** stands out as the region with the highest average and median GHI, making it the most promising for consistent solar energy generation. However, its greater variability suggests that solar output can fluctuate, highlighting the need for robust energy storage or grid integration solutions.
+- **Togo** demonstrates moderate solar potential with less variability than Benin, offering a balance between reliability and output. This makes Togo suitable for solar projects where steady performance is valued, though occasional high-energy events may still occur.
+- **Sierra Leone** has the lowest average and median GHI, but exhibits the most extreme outlier spikes. This indicates that while baseline solar resource is lower, there are rare periods of intense solar irradiance, which could be leveraged with hybrid or flexible energy systems.
+- **Statistical tests** confirm that the differences in solar resource distributions between all three countries are highly significant, emphasizing the importance of region-specific planning and technology selection for solar energy deployment.
+
+**Conclusion:**  
+The cross-country analysis reveals that solar resource characteristics are distinctly different across Benin, Togo, and Sierra Leone. These insights can guide policymakers, developers, and researchers in optimizing solar energy strategies tailored to each region’s unique climate and variability 
+profile. The interactive dashboard enables ongoing exploration and comparison, supporting data-driven decisions for sustainable energy development in West Africa.""")
