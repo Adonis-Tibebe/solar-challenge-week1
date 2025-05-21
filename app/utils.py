@@ -36,30 +36,43 @@ def country_metric_extremes_str(summary, metrics=['GHI', 'DNI', 'DHI'], stats=['
 def streamlit_country_boxplots(df, metrics, country_col='Country', palette=None, figsize=(10, 5)):
     """
     Streamlit + Plotly version: Interactive boxplots for specified metrics grouped by country.
+    Adds error spotting for empty data, missing columns, and plotting errors.
     """
     df = _downsample_df(df)
+    if df.empty:
+        st.warning("No data available for plotting after downsampling/filtering.")
+        return
     if palette is None:
         unique_countries = df[country_col].unique()
         palette = dict(zip(unique_countries, sns.color_palette("tab10", len(unique_countries)).as_hex()))
 
     for metric in metrics:
-        st.subheader(f"Boxplot of {metric} by {country_col}")
-        fig = px.box(
-            df,
-            x=country_col,
-            y=metric,
-            color=country_col,
-            color_discrete_map=palette,
-            points="outliers",
-            title=f"Boxplot of {metric} by {country_col}",
-        )
-        fig.update_layout(
-            xaxis_title=country_col,
-            yaxis_title=metric,
-            height=500,
-            margin=dict(t=40, b=40)
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        if metric not in df.columns:
+            st.error(f"Column '{metric}' not found in data.")
+            continue
+        if df[metric].dropna().empty:
+            st.warning(f"No valid data for {metric}.")
+            continue
+        try:
+            st.subheader(f"Boxplot of {metric} by {country_col}")
+            fig = px.box(
+                df,
+                x=country_col,
+                y=metric,
+                color=country_col,
+                color_discrete_map=palette,
+                points="outliers",
+                title=f"Boxplot of {metric} by {country_col}",
+            )
+            fig.update_layout(
+                xaxis_title=country_col,
+                yaxis_title=metric,
+                height=500,
+                margin=dict(t=40, b=40)
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        except Exception as e:
+            st.error(f"Plotting failed for {metric}: {e}")
 
 def streamlit_avg_ghi_bar(df, country_col='Country', ghi_col='GHI'):
     """
